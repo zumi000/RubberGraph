@@ -2,11 +2,12 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 
 public class GraphMethods {
     static int[][] points = new int[46][3];
+    static ArrayList graphEdges = new ArrayList<GraphEdge>();
     static int goodColor = new Color(0, 180, 0).getRGB();
     static int badColor = new Color(180, 0, 0).getRGB();
     static int countColor = new Color(0, 0, 180).getRGB();
@@ -72,7 +73,9 @@ public class GraphMethods {
                 new IOException(ex);
             }
             int errorcounter = 1;
-            for (int i = 0; i < points.length; i++) {
+            System.out.println(image.getRGB(100, 100 ));
+
+                for (int i = 0; i < points.length; i++) {
 
 
                 System.out.println(i + 1 + ": " + points[i][0] + "; " + points[i][1] + " : " + image.getRGB(points[i][0], points[i][1]));
@@ -126,7 +129,10 @@ public class GraphMethods {
     }
 
     public void drawLine() throws IOException {
-        try {
+        int summCount = 0;
+        int goodCount = 0;
+
+    //    try {
             BufferedImage image = null;
 
             try {
@@ -135,63 +141,77 @@ public class GraphMethods {
                 new IOException(ex);
             }
 
-            int blackCounter = 0;
-            int xIrany = 0;
-            int[] P1 = {20, 20};
-            int[] P2 = {24, 24};
-            int[] Ptest = {P1[0], P1[1]};
-            float vx = P2[0] - P1[0];
-            float vy = P2[1] - P1[1];
-            if (vx > 0) {
-                xIrany = 1;
-            }
-            if (vx < 0) {
-                xIrany = -1;
-            }
-            System.out.println(Arrays.toString(P1));
-            System.out.println(Arrays.toString(P2));
+
+            for (int i = 0; i < points.length; i++) {
+                int[] P1 = points[i];
+
+                for (int j = i + 1; j < points.length; j++) {
 
 
-            while ((Ptest[0] != P2[0]) || (Ptest[1] != P2[1]) && image.getRGB(Ptest[0], Ptest[1]) != -1) {
-                System.out.println("w");
-                if (Math.floor((float)(Ptest[0] - P1[0]) * ((float)(vy / vx))) != Math.floor((float)(Ptest[0] - P1[0] + xIrany) * ((float)(vy / vx)))) {
-                    if (image.getRGB(Ptest[0], Ptest[1]) != -1) {
-                        blackCounter++;
+                    int blackCounter = 0;
+                    int xIrany = 0;
+                    int[] P2 = points[j];
+                    int[] Ptest = {P1[0], P1[1]};
+                    float vx = P2[0] - P1[0];
+                    float vy = P2[1] - P1[1];
+                    if (vx > 0) {
+                        xIrany = 1;
                     }
-                    image.setRGB(Ptest[0], Ptest[1], countColor);
-                    Ptest[1] = Ptest[1] + 1;
-                    System.out.println("y szerint uj koordinata: " + Ptest[1]);
-                }
-                if (Math.floor((float)(Ptest[1] - P1[1]) * ((float)(vx / vy))) != Math.floor((float)(Ptest[1] - P1[1] + 1) * ((float)(vx / vy)))) {
-                    if (image.getRGB(Ptest[0], Ptest[1]) != -1) {
-                        blackCounter++;
+                    if (vx < 0) {
+                        xIrany = -1;
                     }
-                    image.setRGB(Ptest[0], Ptest[1], countColor);
-                    Ptest[0] = Ptest[0] + xIrany * 1;
-                    System.out.println("x szerint uj koordinata: " + Ptest[0]);
+
+                    while ((Ptest[1] != P2[1])) { //&& image.getRGB(Ptest[0], Ptest[1]) != -1) {
+                        //System.out.println("w");
+
+                        if (Math.floor((float) (Ptest[0] - P1[0]) * ((float) (vy / vx))) != Math.floor((float) (Ptest[0] - P1[0] + xIrany) * ((float) (vy / vx)))) {
+                            if (image.getRGB(Ptest[0], Ptest[1]) == -16777216) {
+                                blackCounter++;
+                            }
+                            //image.setRGB(Ptest[0], Ptest[1], countColor);
+                            Ptest[1] = Ptest[1] + 1;
+                            //System.out.println("y szerint uj koordinata: " + Ptest[1]);
+                        }
+                        if (Math.floor((float) (Ptest[1] - P1[1]) * ((float) (vx / vy))) != Math.floor((float) (Ptest[1] - P1[1] + 1) * ((float) (vx / vy)))) {
+                            if (image.getRGB(Ptest[0], Ptest[1]) == -16777216) {
+                                blackCounter++;
+                            }
+                            //image.setRGB(Ptest[0], Ptest[1], countColor);
+                            Ptest[0] = Ptest[0] + xIrany * 1;
+                            //System.out.println("x szerint uj koordinata: " + Ptest[0]);
+                        }
+                    }
+
+
+                    //image.setRGB(P2[0], P2[1], goodColor);
+                    //image.setRGB(P1[0], P1[1], goodColor);
+
+                    if (blackCounter > 0) {
+                        System.out.println(blackCounter + " db fekete pixelt érintett");
+                        summCount++;
+                    } else {
+                        System.out.println("Ez egy gráfél");
+                        graphEdges.add(new GraphEdge(P1, P2));
+                        summCount++;
+                        goodCount++;
+                    }
                 }
             }
-
-
-        image.setRGB(P2[0], P2[1], goodColor);
-            image.setRGB(P1[0], P1[1], goodColor);
-
-            blackCounter--;
-        if (blackCounter > 0) {
-            System.out.println(blackCounter + " db fekete pixelt érintett");
-        } else {
-            System.out.println("Ez egy gráfél");
+        System.out.println("Good: " + goodCount);
+        System.out.println("Summ: " + summCount);
+        for (Object o : graphEdges) {
+            System.out.println(o.toString());
         }
 
-
-            File outputfile = new File("line.bmp");
-            ImageIO.write(image, "bmp", outputfile);
-        } catch (IOException e) {
         }
+   //         File outputfile = new File("line.bmp");
+   //         ImageIO.write(image, "bmp", outputfile);
+   //     } catch (IOException e) {
+   //     }
     }
 
 
-}
+
 
 
 
