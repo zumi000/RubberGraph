@@ -1,5 +1,3 @@
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
-
 import java.util.Arrays;
 
 public class GraphEdge {
@@ -10,6 +8,14 @@ public class GraphEdge {
     public GraphEdge(int[] from, int[] to) {
         this.from = from;
         this.to = to;
+    }
+
+    public int[] getFrom() {
+        return from;
+    }
+
+    public int[] getTo() {
+        return to;
     }
 
     public String toString(){

@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class GraphMethods {
-    static int[][] points = new int[46][3];
-    static ArrayList graphEdges = new ArrayList<GraphEdge>();
-    static int goodColor = new Color(0, 180, 0).getRGB();
-    static int badColor = new Color(180, 0, 0).getRGB();
-    static int countColor = new Color(0, 0, 180).getRGB();
-    static int anotherColor = new Color(90, 90, 90).getRGB();
+    int[][] points = new int[46][3];
+    ArrayList <GraphEdge> graphEdges = new ArrayList<>();
+    int goodColor = new Color(0, 180, 0).getRGB();
+    int badColor = new Color(180, 0, 0).getRGB();
+    int countColor = new Color(0, 0, 180).getRGB();
+    int anotherColor = new Color(90, 90, 90).getRGB();
 
     public int[][] readCSVFile(String fileName) {
         BufferedReader reader = null;
@@ -54,13 +54,13 @@ public class GraphMethods {
         points[47][1] = 50;
         points[46][0] = 100; //fekete
         points[46][1] = 100;*/
-        points[5][1] = 222;
-        points[6][1] = 222;
-        points[19][1] = 80;
-        points[20][1] = 80;
-        points[38][1] = 44;
-        points[45][1] = 44;
 
+        points[10][1] = 44;
+        points[11][1] = 44;
+        points[21][1] = 80;
+        points[22][1] = 80;
+        points[44][1] = 222;
+        points[45][1] = 222;
     }
 
     public void checkColor() throws IOException {
@@ -73,9 +73,9 @@ public class GraphMethods {
                 new IOException(ex);
             }
             int errorcounter = 1;
-            System.out.println(image.getRGB(100, 100 ));
+            System.out.println(image.getRGB(100, 100));
 
-                for (int i = 0; i < points.length; i++) {
+            for (int i = 0; i < points.length; i++) {
 
 
                 System.out.println(i + 1 + ": " + points[i][0] + "; " + points[i][1] + " : " + image.getRGB(points[i][0], points[i][1]));
@@ -128,11 +128,9 @@ public class GraphMethods {
         }
     }
 
-    public void drawLine() throws IOException {
+    public void edgesAddToArray() throws IOException {
         int summCount = 0;
         int goodCount = 0;
-
-    //    try {
             BufferedImage image = null;
 
             try {
@@ -165,26 +163,20 @@ public class GraphMethods {
                         //System.out.println("w");
 
                         if (Math.floor((float) (Ptest[0] - P1[0]) * ((float) (vy / vx))) != Math.floor((float) (Ptest[0] - P1[0] + xIrany) * ((float) (vy / vx)))) {
-                            if (image.getRGB(Ptest[0], Ptest[1]) == -16777216) {
+                            if (image.getRGB(Ptest[0], Ptest[1]) < -1) {
                                 blackCounter++;
                             }
-                            //image.setRGB(Ptest[0], Ptest[1], countColor);
                             Ptest[1] = Ptest[1] + 1;
                             //System.out.println("y szerint uj koordinata: " + Ptest[1]);
                         }
                         if (Math.floor((float) (Ptest[1] - P1[1]) * ((float) (vx / vy))) != Math.floor((float) (Ptest[1] - P1[1] + 1) * ((float) (vx / vy)))) {
-                            if (image.getRGB(Ptest[0], Ptest[1]) == -16777216) {
+                            if (image.getRGB(Ptest[0], Ptest[1]) < -1) {
                                 blackCounter++;
                             }
-                            //image.setRGB(Ptest[0], Ptest[1], countColor);
                             Ptest[0] = Ptest[0] + xIrany * 1;
                             //System.out.println("x szerint uj koordinata: " + Ptest[0]);
                         }
                     }
-
-
-                    //image.setRGB(P2[0], P2[1], goodColor);
-                    //image.setRGB(P1[0], P1[1], goodColor);
 
                     if (blackCounter > 0) {
                         System.out.println(blackCounter + " db fekete pixelt érintett");
@@ -197,18 +189,61 @@ public class GraphMethods {
                     }
                 }
             }
-        System.out.println("Good: " + goodCount);
-        System.out.println("Summ: " + summCount);
-        for (Object o : graphEdges) {
-            System.out.println(o.toString());
-        }
-
-        }
-   //         File outputfile = new File("line.bmp");
-   //         ImageIO.write(image, "bmp", outputfile);
-   //     } catch (IOException e) {
-   //     }
+            System.out.println("Good: " + goodCount);
+            System.out.println("Summ: " + summCount);
+            for (Object o : graphEdges) {
+                System.out.println(o.toString());
+            }
     }
+
+    public void drowEdges() {
+        int counter = 0;
+        System.out.println(graphEdges.size());
+        try {
+            BufferedImage image = null;
+
+            try {
+                image = ImageIO.read(new File("./gumi.bmp"));
+            } catch (IOException ex) {
+                new IOException(ex);
+            }
+
+            for (int i = 0; i < graphEdges.size(); i++) {
+                int[] P1 = graphEdges.get(i).from;
+                int[] P2 = graphEdges.get(i).to;
+                int xIrany = 0;
+                int[] Ptest = {P1[0], P1[1]};
+                    float vx = P2[0] - P1[0];
+                    float vy = P2[1] - P1[1];
+                    if (vx > 0) {
+                        xIrany = 1;
+                    }
+                    if (vx < 0) {
+                        xIrany = -1;
+                    }
+                    while ((Ptest[1] != P2[1])) {
+                        if (Math.floor((float) (Ptest[0] - P1[0]) * ((float) (vy / vx))) != Math.floor((float) (Ptest[0] - P1[0] + xIrany) * ((float) (vy / vx)))) {
+                            image.setRGB(Ptest[0], Ptest[1], countColor);
+                            Ptest[1] = Ptest[1] + 1;
+                        }
+                        if (Math.floor((float) (Ptest[1] - P1[1]) * ((float) (vx / vy))) != Math.floor((float) (Ptest[1] - P1[1] + 1) * ((float) (vx / vy)))) {
+                            image.setRGB(Ptest[0], Ptest[1], countColor);
+                            Ptest[0] = Ptest[0] + xIrany * 1;
+                        }
+                    }
+                    //image.setRGB(P2[0], P2[1], countColor);
+                    //image.setRGB(P1[0], P1[1], countColor);
+                counter++;
+
+            }
+
+            System.out.println(counter);
+            File outputfile = new File("realEdges.bmp");
+            ImageIO.write(image, "bmp", outputfile);
+        } catch (IOException e) {
+        }
+    }
+}
 
 
 

@@ -8,11 +8,10 @@ public class RubberGraph {
         GraphMethods gr = new GraphMethods();
         System.out.println(System.getProperty("user.dir"));
         gr.readCSVFile("./4gumi.csv");
-        //gr.corrAndAddRef();
+        gr.corrAndAddRef();
         //gr.colorize();
-
-
-        //gr.checkColor();
-        gr.drawLine();
+        gr.checkColor();
+        gr.edgesAddToArray();
+        gr.drowEdges();
     }
 }
