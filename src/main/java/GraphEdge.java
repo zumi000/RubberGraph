@@ -1,25 +1,22 @@
-import java.util.Arrays;
-
 public class GraphEdge {
+    Pixel from;
+    Pixel to;
+    public double length;
+    Equation equation;
 
-    public int[] from;
-    public int[] to;
-
-    public GraphEdge(int[] from, int[] to) {
+    public GraphEdge(Pixel from, Pixel to, double length) {
         this.from = from;
         this.to = to;
+        this.length = length;
+        this.equation = new Equation(from.y-to.y, to.x-from.x, ((from.y-to.y)*from.x + (to.x-from.x)*from.y));
     }
 
-    public int[] getFrom() {
-        return from;
-    }
-
-    public int[] getTo() {
-        return to;
+    public GraphEdge(int a, int b, int c) {
+        this.equation = new Equation(a, b, c);
     }
 
     public String toString(){
-        return (Arrays.toString(from) + "->" + Arrays.toString(to));
+        return (from.x + "; " + from.y + "<->" + to.x + "; " + to.y + " length: " + length);
     }
 }
 
